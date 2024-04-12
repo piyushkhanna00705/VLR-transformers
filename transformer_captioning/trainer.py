@@ -24,6 +24,7 @@ class Trainer(object):
         #TODO - Compute cross entropy loss between predictions and labels. 
         #Make sure to compute this loss only for indices where label is not the null token.
         #The loss should be averaged over batch and sequence dimensions. 
+        loss = torch.nn.CrossEntropyLoss(ignore_index = self.model._null)(predictions.view(-1, predictions.shape[-1]), labels.flatten())
         return loss
     
     def val(self):
@@ -38,7 +39,7 @@ class Trainer(object):
             logits = self.model(features, captions[:, :-1])
 
             loss = self.loss(logits, captions[:, 1:])
-            val_loss += loss.detach().cpu().numpy()
+            val_loss += loss.detach().to('cuda').numpy()
             num_batches += 1
 
         self.model.train()
@@ -60,7 +61,7 @@ class Trainer(object):
                 loss.backward()
                 self.optim.step()
                 
-                epoch_loss += loss.detach().cpu().numpy()
+                epoch_loss += loss.detach().to('cuda').numpy()
                 num_batches += 1
                 
             self.loss_history.append(epoch_loss/num_batches)

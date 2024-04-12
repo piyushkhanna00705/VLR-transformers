@@ -2,11 +2,13 @@ import numpy as np
 import torch
 from vit import ViT
 
+device = 'cuda'
+
 class Trainer:
     def __init__(self, model, train_dataloader, test_dataloader, learning_rate = 0.001, batch_size = 100, 
-            num_epochs = 10, print_every = 10, save_every=10, verbose = True, device = 'cuda'):
+            num_epochs = 10, print_every = 10, save_every=10, verbose = True, device = device):
       
-        self.model = model
+        self.model = model.to(device)
         self.train_dataloader = train_dataloader
         self.test_dataloader = test_dataloader
         self.learning_rate = learning_rate
@@ -49,7 +51,7 @@ class Trainer:
 
         
         # TODO - Compute cross entropy loss between predictions and labels. 
-        loss = None
+        loss = torch.functional.F.cross_entropy(predictions, labels)
         
 
         return loss
